@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CAPTURE QOUTE</title>
+    <link rel="stylesheet" href="https://unpkg.com/onsenui/css/onsenui.css">
+    <link rel="stylesheet" href="https://unpkg.com/onsenui/css/onsen-css-components.min.css">
+    <script src="https://unpkg.com/onsenui/js/onsenui.min.js"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script> <!-- Mengubah lokasi script html2canvas -->
+</head>
+
+<style>
+    #result {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        min-height: 90vh;
+    }
+
+    #activity {
+        font-size: 2em;
+        font-weight: 800;
+    }
+
+    #type {
+        background-color: crimson;
+        font-size: 24px;
+        font-weight: 600;
+        color: white;
+        padding: 8px 16px;
+        display: none;
+    }
+</style>
+
+<body>
+    <ons-page>
+        <ons-toolbar>
+            <div class="center">CAPTURE QOUTE</div>
+            <div class="right">
+                <ons-toolbar-button>
+                    <!-- Menggunakan <a> untuk men-download gambar -->
+                    <a id="screenshot" download>📸</a>
+                </ons-toolbar-button>
+            </div>
+        </ons-toolbar>
+        <ons-fab position="bottom right" onclick="generateIdea()">
+            <ons-icon icon="md-plus"></ons-icon>
+        </ons-fab>
+
+        <div id="result">
+            <h1 id="activity"></h1>
+            <p id="type"></p>
+        </div>
+    </ons-page>
+    <script>
+        async function generateIdea() {
+            const result = document.getElementById("result");
+            const activity = document.getElementById("activity");
+            const type = document.getElementById("type");
+            const screenshot = document.getElementById("screenshot");
+
+            const url = "https://www.boredapi.com/api/activity";
+            const response = await fetch(url);
+            const api = await response.json();
+
+            activity.textContent = api.activity;
+            type.textContent = api.type;
+            type.style.display = "block";
+
+            let count = 0;
+
+            screenshot.addEventListener("click", function () {
+                // Mengatur kondisi untuk menghindari reload yang berulang
+                count && location.reload();
+                
+                html2canvas(result).then((canvas) => {
+                    // Menetapkan atribut href untuk men-download gambar
+                    screenshot.setAttribute("href", canvas.toDataURL("image/png"));
+                    // Mengganti ikon tombol dengan ikon simpan
+                    screenshot.textContent = "📥";
+                    count = 1;
+                });
+            });
+        }
+    </script>
+</body>
+
+</html>
